@@ -3,7 +3,6 @@ name: macOS checks
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -52,8 +51,11 @@ jobs:
           name: TM-Toolset-mac-unsigned
           path: release/*.dmg
           if-no-files-found: error
-      - name: Publish the download on a version tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: gh release create "$GITHUB_REF_NAME" release/*.dmg --title "TM Toolset for Mac $GITHUB_REF_NAME" --notes "Unsigned test build. See the README for how to open it the first time." || gh release upload "$GITHUB_REF_NAME" release/*.dmg --clobber
+      - name: Publish the download as a release
+        if: github.ref == 'refs/heads/main'
+        run: |
+          VER="v$(node -p "require('./package.json').version")"
+          gh release create "$VER" release/*.dmg --target "$GITHUB_SHA" --title "TM Toolset for Mac $VER" --notes "Unsigned test build. See the README for how to open it the first time." \
+            || gh release upload "$VER" release/*.dmg --clobber
         env:
           GH_TOKEN: ${{ github.token }}
