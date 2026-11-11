@@ -88,7 +88,8 @@ function scanReports(days) {
       if (j) { try { const o = JSON.parse(j[1]); app = o.app_name || o.name || ''; if (String(o.bug_type) === '210') continue; if (/hang|spin/i.test(String(o.bug_type_name || ''))) kind = 'hang'; } catch { /* ignore */ } }
       if (!app) app = (/^Process:\s+(.+?)\s+\[/m.exec(head) || [])[1] || f.replace(/[-_]\d{4}-\d{2}-\d{2}.*$/, '').replace(/\.(ips|crash|hang|spin|diag)$/i, '');
       app = clean(app, 60);
-      if (!app) continue;
+      // Memory-pressure and other system event logs are not app crashes.
+      if (!app || /^(JetsamEvent|ExcUserFault|stacks|log-|Analytics|SiriSearchFeedback)/i.test(app)) continue;
       const rec = apps[app] || (apps[app] = { app, crashes: 0, hangs: 0, last: '' });
       if (kind === 'hang') rec.hangs++; else rec.crashes++;
       const t = st.mtime.toISOString(); if (t > rec.last) rec.last = t;

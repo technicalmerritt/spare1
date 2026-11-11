@@ -76,6 +76,7 @@ async function runDrives() {
     if (!v || !v.bsd_name || !v.size_in_bytes) continue;
     const mp = String(v.mount_point || '');
     if (mp !== '/' && !/^\/Volumes\//.test(mp)) continue;
+    if (/cryptex/i.test(mp) || Number(v.size_in_bytes) < 1e9) continue;
     const whole = String(v.bsd_name).replace(/s\d+$/, '');
     const phys = containerOf[whole] || whole;
     (volsByDisk[phys] = volsByDisk[phys] || []).push({ drive: mp, label: clean(v._name || '', 50), freeGB: gb(v.free_space_in_bytes), sizeGB: gb(v.size_in_bytes), fs: clean(v.file_system || '', 20) });

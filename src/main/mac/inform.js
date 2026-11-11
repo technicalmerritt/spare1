@@ -255,6 +255,8 @@ async function runInform(onProgress) {
     if (!v || !v.size_in_bytes) continue;
     const mp = String(v.mount_point || '');
     if (mp !== '/' && !/^\/Volumes\//.test(mp)) continue;
+    // Skip macOS's own tiny system images (cryptexes, update assets).
+    if (/cryptex/i.test(mp) || Number(v.size_in_bytes) < 1e9) continue;
     const size = Number(v.size_in_bytes), free = Number(v.free_space_in_bytes) || 0;
     out.volumes.push({ drive: mp, label: clean(v._name || '', 50), fs: clean(v.file_system || '', 20), sizeGB: gb(size), freeGB: gb(free), freePct: size ? Math.round((free / size) * 100) : 0 });
   }
@@ -311,7 +313,8 @@ async function runInform(onProgress) {
     for (const p of arr(a.SPApplicationsDataType)) {
       if (!p || !p._name) continue;
       const where = String(p.path || '');
-      if (/^\/System\/|^\/Library\/Apple\/|\/Contents\/|^\/usr\//.test(where)) continue;
+      // Only apps a person would recognise: the Applications folders, not helper apps buried in Library.
+      if (!/^\/Applications\/|^\/Users\/[^/]+\/Applications\//.test(where) || /\.app\/.*\.app$/.test(where)) continue;
       const signer = arr(p.signed_by)[0] || '';
       out.programs.push({
         name: clean(p._name, 80), version: clean(p.version || '', 30),
