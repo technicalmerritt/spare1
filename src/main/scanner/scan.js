@@ -1,0 +1,134 @@
+'use strict';
+
+const path = require('node:path');
+const rules = require('../mac/rules');
+const collector = require('../mac/scan-collect');
+
+let active = null; // current child process
+let cancelledFlag = false;
+
+class ScanError extends Error {
+  constructor(message, detail) {
+    super(message);
+    this.detail = detail || '';
+  }
+}
+
+async function runScan(onProgress) {
+  cancelledFlag = false;
+  let data;
+  try {
+    // Cancelling stops waiting straight away; any collector still running
+    // finishes in the background and its result is discarded.
+    const cancelled = new Promise((_, reject) => { active = { kill() { reject(new Error('cancelled')); } }; });
+    data = await Promise.race([collector.collect(onProgress), cancelled]);
+  } catch (err) {
+    if (cancelledFlag) {
+      cancelledFlag = false;
+      const e = new ScanError('Scan cancelled.');
+      e.cancelled = true;
+      throw e;
+    }
+    throw new ScanError('The scanner could not collect system data.', (err && err.message) || String(err));
+  } finally {
+    active = null;
+  }
+
+  if (data && data.__error__) throw new ScanError('The scanner reported an internal error.', String(data.__error__));
+  if (onProgress) onProgress('Analysing results…');
+  const evaluated = rules.evaluate(data);
+  return { data, ...evaluated, generatedAt: data.generatedAt || new Date().toISOString() };
+}
+
+function cancel() {
+  if (active) {
+    cancelledFlag = true;
+    try { active.kill(); } catch { /* ignore */ }
+    return true;
+  }
+  return false;
+}
+
+// ---- Standalone HTML report (self-contained, printable) ----
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+const SEV_LABEL = { critical: 'Critical', warning: 'Warning', info: 'Info', ok: 'OK' };
+const SEV_COLOR = { critical: '#ff5c6c', warning: '#f3b23c', info: '#4c8dff', ok: '#3ec07a' };
+
+function buildHtmlReport(result) {
+  const r = result || {};
+  const sys = (r.data && r.data.system) || {};
+  const counts = r.counts || {};
+  const when = new Date(r.generatedAt || Date.now());
+
+  const findingsHtml = (r.findings || [])
+    .map((f) => {
+      const color = SEV_COLOR[f.severity] || '#888';
+      const detail = f.detail ? `<pre class="detail">${esc(f.detail)}</pre>` : '';
+      const rec = f.recommendation ? `<p class="rec"><strong>Recommended:</strong> ${esc(f.recommendation)}</p>` : '';
+      return `<div class="finding" style="border-left-color:${color}">
+        <div class="fhead"><span class="sev" style="background:${color}">${SEV_LABEL[f.severity] || f.severity}</span>
+        <span class="cat">${esc(f.category)}</span><span class="ftitle">${esc(f.title)}</span></div>
+        <p class="summary">${esc(f.summary)}</p>${rec}${detail}</div>`;
+    })
+    .join('\n');
+
+  const scoreColor = r.score >= 80 ? SEV_COLOR.ok : r.score >= 50 ? SEV_COLOR.warning : SEV_COLOR.critical;
+
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>TM Toolset — Mac Health Report</title>
+<style>
+  :root{color-scheme:light}
+  body{font:14px/1.55 system-ui,Segoe UI,Roboto,sans-serif;margin:0;background:#f4f5f7;color:#1b1e26}
+  .wrap{max-width:900px;margin:0 auto;padding:28px}
+  header{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+  .score{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:26px;font-weight:700;background:${scoreColor};flex:0 0 auto}
+  h1{font-size:20px;margin:0}
+  .muted{color:#6b7280}
+  .counts{margin:14px 0 24px;display:flex;gap:8px;flex-wrap:wrap}
+  .count{padding:4px 12px;border-radius:999px;color:#fff;font-size:12px;font-weight:600}
+  .sysbox{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  .sysbox div{display:inline-block;margin-right:22px;color:#374151}
+  .finding{background:#fff;border:1px solid #e3e6ea;border-left-width:5px;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+  .fhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .sev{color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px}
+  .cat{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+  .ftitle{font-weight:600}
+  .summary{margin:4px 0}
+  .rec{margin:6px 0;color:#1f6f43}
+  .detail{background:#f0f1f4;border-radius:6px;padding:8px 10px;font:12px ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-x:auto;color:#374151}
+  footer{color:#9aa2b1;font-size:12px;margin-top:24px;text-align:center}
+  @media print{body{background:#fff}.finding,.sysbox{break-inside:avoid}}
+</style></head>
+<body><div class="wrap">
+  <header>
+    <div class="score">${esc(r.score)}</div>
+    <div><h1>Mac Health Report</h1><div class="muted">${esc(r.summary || '')}</div></div>
+  </header>
+  <div class="counts">
+    <span class="count" style="background:${SEV_COLOR.critical}">${esc(counts.critical || 0)} Critical</span>
+    <span class="count" style="background:${SEV_COLOR.warning}">${esc(counts.warning || 0)} Warning</span>
+    <span class="count" style="background:${SEV_COLOR.info}">${esc(counts.info || 0)} Info</span>
+    <span class="count" style="background:${SEV_COLOR.ok}">${esc(counts.ok || 0)} OK</span>
+  </div>
+  <div class="sysbox">
+    <div><strong>Model:</strong> ${esc(sys.manufacturer || '')} ${esc(sys.model || '')}</div>
+    <div><strong>OS:</strong> ${esc(sys.caption || '')} ${esc(sys.version || '')} (build ${esc(sys.buildNumber || '?')})</div>
+    <div><strong>Serial:</strong> ${esc(sys.serial || 'n/a')}</div>
+    <div><strong>CPU:</strong> ${esc(sys.cpu || '')}</div>
+    <div><strong>RAM:</strong> ${esc(sys.ramGB || '?')} GB</div>
+  </div>
+  ${findingsHtml || '<p class="muted">No findings.</p>'}
+  <footer>TM Toolset · Technical Merritt — Mac Health Report · ${esc(when.toLocaleString())}</footer>
+</div></body></html>`;
+}
+
+module.exports = { runScan, cancel, buildHtmlReport };

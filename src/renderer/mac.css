@@ -1,0 +1,12 @@
+/* macOS edition: Windows-only tools are hidden until they have a Mac equivalent. */
+.platform-mac .tab[data-tab="diagnose"],
+.platform-mac .tab[data-tab="drivers"],
+.platform-mac .tab[data-tab="debloat"],
+.platform-mac .tab[data-tab="repairs"],
+.platform-mac .tab[data-tab="bios"],
+.platform-mac .subtab[data-sub="disktools"],
+.platform-mac .subtab[data-sub="backup"],
+.platform-mac #elevBanner { display: none !important; }
+
+/* Native feel: system font fallbacks and a little room for the traffic lights. */
+.platform-mac { font-family: Poppins, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }

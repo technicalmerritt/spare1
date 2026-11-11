@@ -1,0 +1,185 @@
+{
+  "updated": "2026-11-11",
+  "tools": [
+    {
+      "id": "smartmontools",
+      "cat": "Diagnostics",
+      "name": "smartmontools",
+      "desc": "Command-line SMART reader for SSDs and hard drives.",
+      "why": "Install it and TM Toolset's Drive Health tab shows wear, temperature, power-on hours and error counts instead of a bare pass/fail. brew install smartmontools.",
+      "url": "https://www.smartmontools.org/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "drivedx",
+      "cat": "Diagnostics",
+      "name": "DriveDx",
+      "desc": "Detailed SSD and hard-drive health with early-warning indicators.",
+      "why": "The most thorough drive-health app on the Mac, with clear failing-soon verdicts.",
+      "url": "https://binaryfruit.com/drivedx",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "coconutbattery",
+      "cat": "Diagnostics",
+      "name": "coconutBattery",
+      "desc": "Battery health for the Mac, and for an iPhone or iPad plugged into it.",
+      "why": "Quick second opinion on battery capacity, and it reads iOS device batteries too.",
+      "url": "https://www.coconut-flavour.com/coconutbattery/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "etrecheck",
+      "cat": "Diagnostics",
+      "name": "EtreCheck",
+      "desc": "One-click report on a Mac's hardware, software and problems.",
+      "why": "The long-standing Mac troubleshooting report; useful to compare against.",
+      "url": "https://etrecheck.com/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "stats",
+      "cat": "Diagnostics",
+      "name": "Stats",
+      "desc": "Menu-bar monitor for CPU, GPU, memory, disks, sensors and fans.",
+      "why": "Free and open source - live temperatures and fan speeds while you work on a machine.",
+      "url": "https://github.com/exelban/stats",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "mactracker",
+      "cat": "Reference",
+      "name": "Mactracker",
+      "desc": "Specifications for every Mac, iPhone and iPad Apple has made.",
+      "why": "Look up maximum RAM, supported macOS versions and original spec for any model on the bench.",
+      "url": "https://mactracker.ca/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "malwarebytes",
+      "cat": "Security",
+      "name": "Malwarebytes for Mac",
+      "desc": "Scanner for Mac adware, malware and unwanted programs.",
+      "why": "The standard clean-up tool when a Mac has adware or a hijacked browser.",
+      "url": "https://www.malwarebytes.com/mac",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "knockknock",
+      "cat": "Security",
+      "name": "KnockKnock",
+      "desc": "Shows everything set to run persistently on a Mac.",
+      "why": "From Objective-See: lists launch items, extensions and more, with VirusTotal checks.",
+      "url": "https://objective-see.org/products/knockknock.html",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "lulu",
+      "cat": "Security",
+      "name": "LuLu",
+      "desc": "Free, open-source outbound firewall.",
+      "why": "See and block what is calling out from a suspect Mac.",
+      "url": "https://objective-see.org/products/lulu.html",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "onyx",
+      "cat": "Maintenance",
+      "name": "OnyX",
+      "desc": "Maintenance, cache clearing and hidden-settings tool.",
+      "why": "Rebuilds caches and databases and runs maintenance scripts. Download the build matching the macOS version.",
+      "url": "https://www.titanium-software.fr/en/onyx.html",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "appcleaner",
+      "cat": "Maintenance",
+      "name": "AppCleaner",
+      "desc": "Removes an app together with its leftover support files.",
+      "why": "Clean uninstalls, including the launch agents an app leaves behind.",
+      "url": "https://freemacsoft.net/appcleaner/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "grandperspective",
+      "cat": "Maintenance",
+      "name": "GrandPerspective",
+      "desc": "Visual map of what is using disk space.",
+      "why": "Find what filled the startup disk at a glance.",
+      "url": "https://grandperspectiv.sourceforge.net/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "ccc",
+      "cat": "Backup",
+      "name": "Carbon Copy Cloner",
+      "desc": "Disk cloning and scheduled backups.",
+      "why": "The tool for cloning a customer's data to a new drive or taking a safety copy before repair work.",
+      "url": "https://bombich.com/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "superduper",
+      "cat": "Backup",
+      "name": "SuperDuper!",
+      "desc": "Simple disk cloning and backup.",
+      "why": "Straightforward clone-before-you-work tool; the free mode does full copies.",
+      "url": "https://www.shirt-pocket.com/SuperDuper/SuperDuperDescription.html",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "testdisk",
+      "cat": "Recovery",
+      "name": "TestDisk & PhotoRec",
+      "desc": "Partition repair and file recovery.",
+      "why": "Free, open-source recovery of lost partitions and deleted files.",
+      "url": "https://www.cgsecurity.org/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "mist",
+      "cat": "Installers",
+      "name": "Mist",
+      "desc": "Downloads macOS installers and firmware (IPSW) from Apple.",
+      "why": "Get the exact macOS installer or Apple silicon restore image you need.",
+      "url": "https://github.com/ninxsoft/Mist",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "configurator",
+      "cat": "Installers",
+      "name": "Apple Configurator",
+      "desc": "Revive or restore Mac firmware, and set up iPhones and iPads.",
+      "why": "Needed to revive a T2 or Apple silicon Mac that will not start (DFU mode). From the Mac App Store.",
+      "url": "https://support.apple.com/apple-configurator",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "homebrew",
+      "cat": "Utilities",
+      "name": "Homebrew",
+      "desc": "Package manager for command-line tools.",
+      "why": "The easy way to install smartmontools, libimobiledevice and other technician tools.",
+      "url": "https://brew.sh/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "libimobiledevice",
+      "cat": "Utilities",
+      "name": "libimobiledevice",
+      "desc": "Command-line tools for talking to iPhones and iPads.",
+      "why": "Powers the Apple Devices tab. brew install libimobiledevice.",
+      "url": "https://libimobiledevice.org/",
+      "added": "2026-11-11"
+    },
+    {
+      "id": "openboardview",
+      "cat": "Board repair",
+      "name": "OpenBoardView",
+      "desc": "Viewer for boardview files.",
+      "why": "Open boardviews from the Board Repair library on the Mac.",
+      "url": "https://openboardview.org/",
+      "added": "2026-11-11"
+    }
+  ]
+}

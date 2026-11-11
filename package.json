@@ -1,0 +1,60 @@
+{
+  "name": "tm-toolset-mac",
+  "version": "0.1.0",
+  "description": "TM Toolset for Mac \u2014 technician diagnostic suite by Technical Merritt Computer Services.",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/run-tests.js",
+    "collect": "node test/collect.js",
+    "dist": "electron-builder --mac",
+    "dist:dir": "electron-builder --mac --dir"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.technicalmerritt.tmtoolset.mac",
+    "productName": "TM Toolset",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "TM Toolset uses the microphone for dictated notes and voice memos in the Feedback tab.",
+        "NSAppleEventsUsageDescription": "TM Toolset asks System Events for the list of Open at Login items, and asks for an administrator password when you change a machine-wide startup item."
+      }
+    },
+    "dmg": {
+      "title": "TM Toolset ${version}"
+    }
+  }
+}

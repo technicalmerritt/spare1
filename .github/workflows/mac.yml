@@ -1,0 +1,54 @@
+name: macOS checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15, macos-13]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Unit tests
+        run: npm test
+      - name: Run every collector on a real Mac
+        run: node test/collect.js --scan
+      - name: Full collector output
+        run: node test/collect.js --full > collectors.json 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: collectors-${{ matrix.os }}
+          path: collectors.json
+
+  build:
+    runs-on: macos-14
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Build unsigned universal app
+        run: npx electron-builder --mac --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TM-Toolset-mac-unsigned
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: error
